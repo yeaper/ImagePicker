@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="toolbar_common_bg">#fcfcfc</color>
+    <color name="title">#373737</color>
+    <color name="divide_line">#E7E7E7</color>
+
+    <color name="__picker_text_40">#282828</color>
+    <color name="__picker_text_80">#505050</color>
+    <color name="picker_bg_item">#f3f3f3</color>
+    <color name="picker_item_photo_border_selected">#ff99cc00</color>
+    <color name="picker_item_photo_border_normal">#00000000</color>
+</resources>

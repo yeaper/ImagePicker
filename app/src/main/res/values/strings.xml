@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ImagePicker</string>
+    <string name="title_activity_select_image">SelectImageActivity</string>
+
+    <string name="all_images">全部图片</string>
+    <string name="picker_image_count">%1$d</string>
+    <string name="__picker_done_with_count">完成(%1$d/%2$d)</string>
+    <string name="__picker_over_max_count_tips">最多可选 %1$d 张</string>
+</resources>
