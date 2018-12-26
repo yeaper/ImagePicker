@@ -40,7 +40,7 @@ dependencies {
 <dependency>
     <groupId>com.github.yeaper</groupId>
     <artifactId>ImagePicker</artifactId>
-    <version>Tag</version>
+    <version>Tag</version
 </dependency>
 
 ```
@@ -56,7 +56,7 @@ PhotoPicker.builder()
       .start(MainActivity.this, REQUEST_CODE_SELECT_PHOTO);
 ```
 
-然后，在 onActivityResult 中接收选择的图片路径结合
+然后，在 onActivityResult 中接收选择的图片路径集合
 
 ```java
 @Override
@@ -72,3 +72,5 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     }
 }
 ```
+
+后面考虑加入更多的可配置化选项，比如标题、界面style、按钮文字等等
