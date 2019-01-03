@@ -22,7 +22,7 @@ allprojects {
 
 
 dependencies {
-	  implementation 'com.github.yeaper:ImagePicker:Tag'
+	  implementation 'com.github.yeaper:ImagePicker:1.0.1'
 }
 ```
 
@@ -40,7 +40,7 @@ dependencies {
 <dependency>
     <groupId>com.github.yeaper</groupId>
     <artifactId>ImagePicker</artifactId>
-    <version>Tag</version
+    <version>1.0.1</version>
 </dependency>
 
 ```
