@@ -1,7 +1,7 @@
 package com.yyp.image.picker.interfaces;
 
 
-import com.yyp.image.picker.model.Photo;
+import com.yyp.image.picker.bean.Photo;
 
 public interface Selectable {
 

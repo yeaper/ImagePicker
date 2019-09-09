@@ -11,7 +11,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 
 import com.yyp.image.picker.R;
-import com.yyp.image.picker.model.PhotoDirectory;
+import com.yyp.image.picker.bean.PhotoDirectory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ public class MediaStoreHelper {
     /**
      * 获取所有的图片文件夹
      *
-     * @param activity 上下文
+     * @param activity       上下文
      * @param args
      * @param resultCallback 结果回调
      */
@@ -56,6 +56,7 @@ public class MediaStoreHelper {
 
         /**
          * 创建一个图片文件加载器
+         *
          * @param id
          * @param args
          * @return
@@ -81,6 +82,7 @@ public class MediaStoreHelper {
 
         /**
          * 加载完成后，把数据放入集合
+         *
          * @param loader
          * @param data
          */
@@ -96,50 +98,56 @@ public class MediaStoreHelper {
             directories.put("ALL", photoDirectoryAll);
 
             // 遍历数据
-            while (data.moveToNext()) {
-                // 单个图片信息
-                int imageId = data.getInt(data.getColumnIndexOrThrow(_ID));
-                String bucketId = data.getString(data.getColumnIndexOrThrow(BUCKET_ID));
-                String name = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME));
-                String path = data.getString(data.getColumnIndexOrThrow(DATA));
-                long size = data.getInt(data.getColumnIndexOrThrow(SIZE));
+            if (data.getCount() > 0) {
+                data.moveToFirst(); //必须移动到第一个，每次重新进入界面，都会走这里
+                do {
+                    // 单个图片信息
+                    int imageId = data.getInt(data.getColumnIndexOrThrow(_ID));
+                    String bucketId = data.getString(data.getColumnIndexOrThrow(BUCKET_ID));
+                    String name = data.getString(data.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME));
+                    String path = data.getString(data.getColumnIndexOrThrow(DATA));
+                    long dateAdded = data.getLong(data.getColumnIndexOrThrow(DATE_ADDED));
+                    long size = data.getInt(data.getColumnIndexOrThrow(SIZE));
 
-                if (size < 1) continue;
+                    if (size < 1) continue;
 
-                // 将图片添加到对应的文件夹中
-                if (!directories.containsKey(bucketId)) { //扫描到新的文件夹需要重新创建
-                    PhotoDirectory photoDirectory = new PhotoDirectory();
-                    photoDirectory.setId(bucketId);
-                    photoDirectory.setName(name);
-                    photoDirectory.setCoverPath(path);
-                    photoDirectory.addPhoto(imageId, path);
-                    photoDirectory.setDateAdded(data.getLong(data.getColumnIndexOrThrow(DATE_ADDED)));
-                    directories.put(bucketId, photoDirectory);
-                } else {
-                    directories.get(bucketId).addPhoto(imageId, path); //将同一文件夹下的图片放在一起
+                    // 将图片添加到对应的文件夹中
+                    if (!directories.containsKey(bucketId)) { //扫描到新的文件夹需要重新创建
+                        PhotoDirectory photoDirectory = new PhotoDirectory();
+                        photoDirectory.setId(bucketId);
+                        photoDirectory.setName(name);
+                        photoDirectory.setCoverPath(path);
+                        photoDirectory.setDateAdded(dateAdded);
+                        photoDirectory.addPhoto(imageId, path); //文件夹中添加图片
+                        directories.put(bucketId, photoDirectory);
+                    } else {
+                        PhotoDirectory photoDirectory = directories.get(bucketId);
+                        if (photoDirectory != null) {
+                            photoDirectory.addPhoto(imageId, path); //将同一文件夹下的图片放在一起
+                        }
+                    }
+                    // 所有图片都添加到"所有图片"这个集合中
+                    photoDirectoryAll.addPhoto(imageId, path);
+                } while (data.moveToNext());
+
+
+                if (photoDirectoryAll.getPhotoPaths().size() > 0) {
+                    // 设置该文件夹的显示图为图片集合的第一张
+                    photoDirectoryAll.setCoverPath(photoDirectoryAll.getPhotoPaths().get(0));
                 }
-                // 所有图片都添加到"所有图片"这个集合中
-                photoDirectoryAll.addPhoto(imageId, path);
-            }
 
-            if (photoDirectoryAll.getPhotoPaths().size() > 0) {
-                // 设置该文件夹的显示图为图片集合的第一张
-                photoDirectoryAll.setCoverPath(photoDirectoryAll.getPhotoPaths().get(0));
-            }
-
-
-            if (resultCallback != null) { //将Map集合转为List集合回调出去
-                List<PhotoDirectory> photoDirectoryList = new ArrayList<>();
-                for(String key: directories.keySet()){
-                    photoDirectoryList.add(directories.get(key));
+                if (resultCallback != null) { //将Map集合转为List集合回调出去
+                    List<PhotoDirectory> photoDirectoryList = new ArrayList<>();
+                    for (String key : directories.keySet()) {
+                        photoDirectoryList.add(directories.get(key));
+                    }
+                    resultCallback.onResultCallback(photoDirectoryList);
                 }
-                resultCallback.onResultCallback(photoDirectoryList);
             }
         }
 
         @Override
         public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-            loader.startLoading();
         }
     }
 

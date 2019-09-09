@@ -1,9 +1,13 @@
-package com.yyp.image.picker.model;
+package com.yyp.image.picker.bean;
+
+import java.io.Serializable;
 
 /**
  * 图片类
  */
-public class Photo {
+public class Photo implements Serializable {
+
+  private static final long serialVersionUID = 5609493768405518179L;
 
   private int id; // 图片id
   private String path; // 图片路径
@@ -28,4 +32,9 @@ public class Photo {
   public void setId(int id) {
     this.id = id;
   }
+
+    @Override
+    public int hashCode() {
+        return getId();
+    }
 }

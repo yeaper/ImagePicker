@@ -1,5 +1,6 @@
 package com.yyp.image.picker.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +11,8 @@ import com.bumptech.glide.Glide;
 import com.yyp.image.picker.R;
 import com.yyp.image.picker.interfaces.OnItemCheckListener;
 import com.yyp.image.picker.interfaces.OnPhotoClickListener;
-import com.yyp.image.picker.model.Photo;
-import com.yyp.image.picker.model.PhotoDirectory;
+import com.yyp.image.picker.bean.Photo;
+import com.yyp.image.picker.bean.PhotoDirectory;
 import com.yyp.image.picker.util.AndroidLifecycleUtils;
 
 import java.io.File;
@@ -27,6 +28,9 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
     private OnPhotoClickListener onPhotoClickListener = null;
     private View.OnClickListener onCameraClickListener = null;
 
+    /**
+     * item类型
+     */
     public final static int ITEM_TYPE_CAMERA = 100;
     public final static int ITEM_TYPE_PHOTO = 101;
 
@@ -43,8 +47,9 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
         return (showCamera() && position == 0) ? ITEM_TYPE_CAMERA : ITEM_TYPE_PHOTO;
     }
 
+    @NonNull
     @Override
-    public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PhotoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.picker_item_photo, parent, false);
         final PhotoViewHolder holder = new PhotoViewHolder(itemView);
         // 如果是相机，则隐藏选择框
@@ -66,8 +71,7 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
 
 
     @Override
-    public void onBindViewHolder(final PhotoViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull final PhotoViewHolder holder, int position) {
         if (getItemViewType(position) == ITEM_TYPE_PHOTO) {
             // 已选中的图片集中，获取对应图片
             List<Photo> photos = getCurrentPhotos();
@@ -184,12 +188,8 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
      *
      * @return
      */
-    public ArrayList<String> getSelectedPhotoPaths() {
-        ArrayList<String> selectedPhotoPaths = new ArrayList<>(getSelectedItemCount());
-
-        selectedPhotoPaths.addAll(selectedPhotos);
-
-        return selectedPhotoPaths;
+    public List<Photo> getSelectedPhotos() {
+        return selectedPhotos;
     }
 
     /**

@@ -3,8 +3,8 @@ package com.yyp.image.picker.adapter;
 import android.support.v7.widget.RecyclerView;
 
 import com.yyp.image.picker.interfaces.Selectable;
-import com.yyp.image.picker.model.Photo;
-import com.yyp.image.picker.model.PhotoDirectory;
+import com.yyp.image.picker.bean.Photo;
+import com.yyp.image.picker.bean.PhotoDirectory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +16,12 @@ import java.util.List;
 public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements Selectable {
 
-    private static final String TAG = SelectableAdapter.class.getSimpleName();
-
     // 图片文件夹集合
     protected List<PhotoDirectory> photoDirectories;
     // 已选中图片集合
-    protected List<String> selectedPhotos;
+    protected List<Photo> selectedPhotos;
 
-    public int currentDirectoryIndex = 0;
-
+    private int currentDirectoryIndex = 0;
 
     public SelectableAdapter() {
         photoDirectories = new ArrayList<>();
@@ -33,15 +30,15 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
 
     @Override
     public boolean isSelected(Photo photo) {
-        return getSelectedPhotos().contains(photo.getPath());
+        return getSelectedPhotos().contains(photo);
     }
 
     @Override
     public void toggleSelection(Photo photo) {
-        if (selectedPhotos.contains(photo.getPath())) {
-            selectedPhotos.remove(photo.getPath());
+        if (selectedPhotos.contains(photo)) {
+            selectedPhotos.remove(photo);
         } else {
-            selectedPhotos.add(photo.getPath());
+            selectedPhotos.add(photo);
         }
     }
 
@@ -54,7 +51,6 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
     public int getSelectedItemCount() {
         return selectedPhotos.size();
     }
-
 
     public void setCurrentDirectoryIndex(int currentDirectoryIndex) {
         this.currentDirectoryIndex = currentDirectoryIndex;
@@ -87,7 +83,7 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
      *
      * @return
      */
-    public List<String> getSelectedPhotos() {
+    public List<Photo> getSelectedPhotos() {
         return selectedPhotos;
     }
 

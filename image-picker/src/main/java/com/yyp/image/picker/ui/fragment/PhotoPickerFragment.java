@@ -3,6 +3,7 @@ package com.yyp.image.picker.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.ListPopupWindow;
@@ -21,8 +22,8 @@ import com.bumptech.glide.RequestManager;
 import com.yyp.image.picker.R;
 import com.yyp.image.picker.adapter.PhotoGridAdapter;
 import com.yyp.image.picker.adapter.PopupDirectoryListAdapter;
-import com.yyp.image.picker.model.Photo;
-import com.yyp.image.picker.model.PhotoDirectory;
+import com.yyp.image.picker.bean.Photo;
+import com.yyp.image.picker.bean.PhotoDirectory;
 import com.yyp.image.picker.util.AndroidLifecycleUtils;
 import com.yyp.image.picker.util.ImageCaptureManager;
 import com.yyp.image.picker.util.MediaStoreHelper;
@@ -40,6 +41,8 @@ import static com.yyp.image.picker.util.PhotoPicker.DEFAULT_COLUMN_NUMBER;
  */
 public class PhotoPickerFragment extends Fragment {
 
+    private RecyclerView mRvPhoto;
+
     private ImageCaptureManager captureManager;
     private PhotoGridAdapter photoGridAdapter;
 
@@ -47,7 +50,7 @@ public class PhotoPickerFragment extends Fragment {
     private List<PhotoDirectory> directories; //所有图片文件夹
 
     private int SCROLL_THRESHOLD = 30;
-    int column;
+    private int column;
     //目录弹出框的一次最多显示的目录数目
     public static int COUNT_MAX = 4;
     private final static String EXTRA_COLUMN = "column";
@@ -77,27 +80,28 @@ public class PhotoPickerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getParam();
         init();
+    }
+
+    private void getParam(){
+        if (getArguments() != null) {
+            column = getArguments().getInt(EXTRA_COLUMN, DEFAULT_COLUMN_NUMBER);
+        }else{
+            column = DEFAULT_COLUMN_NUMBER;
+        }
     }
 
     /**
      * 初始化
      */
     public void init(){
-        setRetainInstance(true);
-
         mGlideRequestManager = Glide.with(this);
         directories = new ArrayList<>();
-        if (getArguments() != null) {
-            column = getArguments().getInt(EXTRA_COLUMN, DEFAULT_COLUMN_NUMBER);
-        }else{
-            column = DEFAULT_COLUMN_NUMBER;
-        }
-
         photoGridAdapter = new PhotoGridAdapter(directories);
         photoGridAdapter.setShowCamera(true);
-
         listAdapter = new PopupDirectoryListAdapter(mGlideRequestManager, directories);
+        captureManager = new ImageCaptureManager(getActivity());
 
         // 获取图片
         MediaStoreHelper.getPhotoDirs(getActivity(), null,
@@ -111,25 +115,40 @@ public class PhotoPickerFragment extends Fragment {
                         adjustHeight();
                     }
                 });
-
-        captureManager = new ImageCaptureManager(getActivity());
     }
 
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.layout_select_image, container, false);
+        mRvPhoto = rootView.findViewById(R.id.rv_select_image);
+        btSwitchDirectory = rootView.findViewById(R.id.select_image_folder);
+        return rootView;
+    }
 
-        final View rootView = inflater.inflate(R.layout.layout_select_image, container, false);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        RecyclerView recyclerView = rootView.findViewById(R.id.select_image_recyclerview);
+        initPhotoList();
+        initDirPopupWindow();
+        listen();
+    }
+
+    /**
+     * 初始化图片列表控件
+     */
+    private void initPhotoList(){
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(column, OrientationHelper.VERTICAL);
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(photoGridAdapter);
+        mRvPhoto.setLayoutManager(layoutManager);
+        mRvPhoto.setAdapter(photoGridAdapter);
+    }
 
-        btSwitchDirectory = rootView.findViewById(R.id.select_image_folder);
-
+    /**
+     * 初始化文件夹弹窗
+     */
+    private void initDirPopupWindow(){
         // 实例化文件夹列表弹窗
         listPopupWindow = new ListPopupWindow(getActivity());
         listPopupWindow.setWidth(ListPopupWindow.MATCH_PARENT);
@@ -151,17 +170,22 @@ public class PhotoPickerFragment extends Fragment {
                 photoGridAdapter.notifyDataSetChanged();
             }
         });
+    }
 
+    /**
+     * 监听
+     */
+    private void listen(){
         photoGridAdapter.setOnCameraClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) { //点击拍照
                 openCamera();
             }
         });
 
         btSwitchDirectory.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) { //显示文件夹弹窗
                 if (listPopupWindow.isShowing()) {
                     listPopupWindow.dismiss();
                 } else if (!getActivity().isFinishing()) {
@@ -173,7 +197,7 @@ public class PhotoPickerFragment extends Fragment {
 
 
         // 滑动过程中不请求加载图片，停止后才加载
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRvPhoto.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -191,10 +215,7 @@ public class PhotoPickerFragment extends Fragment {
                 }
             }
         });
-
-        return rootView;
     }
-
     /**
      * 打开照相机
      */
@@ -228,17 +249,20 @@ public class PhotoPickerFragment extends Fragment {
         }
     }
 
+    /**
+     * 获取图片列表适配器
+     *
+     * @return
+     */
     public PhotoGridAdapter getPhotoGridAdapter() {
         return photoGridAdapter;
     }
-
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         captureManager.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
-
 
     @Override
     public void onViewStateRestored(Bundle savedInstanceState) {
@@ -251,8 +275,8 @@ public class PhotoPickerFragment extends Fragment {
      *
      * @return
      */
-    public ArrayList<String> getSelectedPhotoPaths() {
-        return photoGridAdapter.getSelectedPhotoPaths();
+    public List<Photo> getSelectedPhotos() {
+        return photoGridAdapter.getSelectedPhotos();
     }
 
     /**

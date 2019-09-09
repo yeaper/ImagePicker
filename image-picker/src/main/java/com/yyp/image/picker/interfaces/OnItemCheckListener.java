@@ -1,8 +1,11 @@
 package com.yyp.image.picker.interfaces;
 
 
-import com.yyp.image.picker.model.Photo;
+import com.yyp.image.picker.bean.Photo;
 
+/**
+ * item选取监听接口
+ */
 public interface OnItemCheckListener {
 
   /***

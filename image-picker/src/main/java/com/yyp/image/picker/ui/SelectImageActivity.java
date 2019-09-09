@@ -9,12 +9,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.yyp.image.picker.R;
+import com.yyp.image.picker.bean.Photo;
 import com.yyp.image.picker.interfaces.OnItemCheckListener;
-import com.yyp.image.picker.model.Photo;
 import com.yyp.image.picker.ui.fragment.PhotoPickerFragment;
 import com.yyp.image.picker.util.PhotoPicker;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -26,13 +26,22 @@ public class SelectImageActivity extends AppCompatActivity {
     private MenuItem menuDoneItem;
 
     private int maxCount = PhotoPicker.DEFAULT_MAX_COUNT;
-    private boolean menuIsInflated = false;
     private int columnNumber = PhotoPicker.DEFAULT_COLUMN_NUMBER;
-
+    private boolean menuIsInflated = false;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getIntentParam();
+        setContentView(R.layout.picker_activity_photo_picker);
+        setActionBar();
+        showSelectFragment();
+    }
+
+    /**
+     * 获取intent参数
+     */
+    private void getIntentParam(){
         if(getIntent() != null){
             // 获取 intent 传进来的参数
             maxCount = getIntent().getIntExtra(PhotoPicker.EXTRA_MAX_COUNT, PhotoPicker.DEFAULT_MAX_COUNT);
@@ -41,10 +50,6 @@ public class SelectImageActivity extends AppCompatActivity {
             Toast.makeText(this, "参数错误！", Toast.LENGTH_SHORT).show();
             finish();
         }
-
-        setContentView(R.layout.picker_activity_photo_picker);
-        setActionBar();
-        showSelectFragment();
     }
 
     /**
@@ -76,15 +81,14 @@ public class SelectImageActivity extends AppCompatActivity {
                     .commit();
         }
 
-        setListener();
+        listen();
     }
 
-    private void setListener() {
+    private void listen() {
         // 监听图片选择，更新完成按钮的内容
         pickerFragment.getPhotoGridAdapter().setOnItemCheckListener(new OnItemCheckListener() {
             @Override
             public boolean onItemCheck(int position, Photo photo, final int selectedItemCount) {
-
                 menuDoneItem.setEnabled(selectedItemCount > 0); //完成按钮可点击
 
                 /*
@@ -92,8 +96,8 @@ public class SelectImageActivity extends AppCompatActivity {
                     返回是否开关选择框
                 */
                 if (maxCount <= 1) {
-                    List<String> photos = pickerFragment.getPhotoGridAdapter().getSelectedPhotos();
-                    if (!photos.contains(photo.getPath())) {
+                    List<Photo> photos = pickerFragment.getPhotoGridAdapter().getSelectedPhotos();
+                    if (!photos.contains(photo)) {
                         photos.clear();
                         pickerFragment.getPhotoGridAdapter().notifyDataSetChanged();
                     }
@@ -142,8 +146,8 @@ public class SelectImageActivity extends AppCompatActivity {
         // 监听是否按下完成选取键，传递选中的图片路径集合
         if (item.getItemId() == R.id.done) {
             Intent intent = new Intent();
-            ArrayList<String> selectedPhotos = pickerFragment.getSelectedPhotoPaths();
-            intent.putStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS, selectedPhotos);
+            List<Photo> selectedPhotos = pickerFragment.getSelectedPhotos();
+            intent.putExtra(PhotoPicker.KEY_SELECTED_PHOTOS, (Serializable) selectedPhotos);
             setResult(RESULT_OK, intent);
             finish();
             return true;

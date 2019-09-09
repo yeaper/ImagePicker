@@ -26,8 +26,7 @@ public class SquareItemLayout extends RelativeLayout {
         setMeasuredDimension(getDefaultSize(0, widthMeasureSpec), getDefaultSize(0, heightMeasureSpec));
         int childWidthSize = getMeasuredWidth();
         // 测量的宽、高度，设置为子View的宽度（正方形九宫格）
-        heightMeasureSpec =
-                widthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidthSize, MeasureSpec.EXACTLY);
+        heightMeasureSpec = widthMeasureSpec = MeasureSpec.makeMeasureSpec(childWidthSize, MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

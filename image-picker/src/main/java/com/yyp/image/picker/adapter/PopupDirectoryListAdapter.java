@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.RequestManager;
 import com.yyp.image.picker.R;
-import com.yyp.image.picker.model.PhotoDirectory;
+import com.yyp.image.picker.bean.PhotoDirectory;
 
 import java.util.List;
 

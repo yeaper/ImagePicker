@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/select_image_recyclerview"
+        android:id="@+id/rv_select_image"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/select_image_folder"
         android:background="#f3f4f5" />
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <Button
+        android:id="@+id/select_image_folder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white">
-        <Button
-            android:id="@+id/select_image_folder"
-            android:text="@string/all_images"
-            android:layout_width="wrap_content"
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            style="@style/Widget.AppCompat.ActionButton" />
-    </LinearLayout>
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:text="@string/all_images"
+        style="@style/Widget.AppCompat.ActionButton" />
+</RelativeLayout>

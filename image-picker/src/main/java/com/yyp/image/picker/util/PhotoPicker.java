@@ -6,7 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.yyp.image.picker.bean.Photo;
 import com.yyp.image.picker.ui.SelectImageActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -20,9 +24,10 @@ public class PhotoPicker {
     public final static int DEFAULT_COLUMN_NUMBER = 3; //默认展示的图片列数
 
     public final static String KEY_SELECTED_PHOTOS = "SELECTED_PHOTOS"; //选择结果intent回传的key
-
     public final static String EXTRA_MAX_COUNT = "MAX_COUNT"; //最多个数的参数key
     public final static String EXTRA_GRID_COLUMN = "COLUMN"; //展示图片列数的参数key
+
+    private PhotoPicker(){}
 
     public static PhotoPickerBuilder builder() {
         return new PhotoPickerBuilder();
@@ -84,5 +89,22 @@ public class PhotoPicker {
             mPickerOptionsBundle.putInt(EXTRA_GRID_COLUMN, columnCount);
             return this;
         }
+    }
+
+    /**
+     * 获取返回的数据集合
+     *
+     * @return
+     */
+    public static List<Photo> getResultList(Intent data){
+        List<Photo> list = new ArrayList<>();
+        if(data != null){
+            list = (List<Photo>) data.getSerializableExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
+            if(list == null){
+                list = new ArrayList<>();
+            }
+        }
+
+        return list;
     }
 }

@@ -1,15 +1,18 @@
-package com.yyp.image.picker.model;
+package com.yyp.image.picker.bean;
 
 
 import com.yyp.image.picker.util.FileUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 图片文件夹类
  */
-public class PhotoDirectory {
+public class PhotoDirectory implements Serializable {
+
+    private static final long serialVersionUID = 8614529901896317542L;
 
     private String id; // 文件夹ID
     private String coverPath; // 封面图路径

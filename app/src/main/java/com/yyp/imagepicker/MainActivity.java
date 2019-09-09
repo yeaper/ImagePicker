@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yyp.image.picker.bean.Photo;
 import com.yyp.image.picker.util.PhotoPicker;
 
 import java.util.List;
@@ -86,8 +87,8 @@ public class MainActivity extends Activity {
         if(resultCode == RESULT_OK && requestCode == REQUEST_CODE_SELECT_PHOTO){
             // 拿到选取的图片集合
             if(data != null){
-                List<String> imageList = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
-                Toast.makeText(this, imageList.toString(), Toast.LENGTH_SHORT).show();
+                List<Photo> imageList = PhotoPicker.getResultList(data);
+                Toast.makeText(this, String.valueOf(imageList.size()), Toast.LENGTH_SHORT).show();
             }
         }
     }
